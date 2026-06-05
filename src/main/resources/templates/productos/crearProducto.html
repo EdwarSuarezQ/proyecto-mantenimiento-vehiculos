@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App Inventario - Crear Producto</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+
+    <!-- jQuery UI CSS -->
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"
+    />
+
+    <!-- jQuery y jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#datepicker").datepicker({
+          dateFormat: "mm/dd/yy",
+        });
+
+        function calcularCostoTotal() {
+          var precio = parseFloat($("#precio").val()) || 0;
+          var saldoMinimo = parseFloat($("#saldoMinimo").val()) || 0;
+          var costoTotal = precio * saldoMinimo;
+
+          $("#costoTotal").val(costoTotal.toFixed(2));
+        }
+
+        $("#precio, #saldoMinimo").on("input change", calcularCostoTotal);
+
+        calcularCostoTotal();
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 mx-auto rounded border p-4 m-4">
+          <h1 class="text-center my-4">Crear Producto</h1>
+
+          <div
+            th:if="${mensaje != null}"
+            th:class="'alert alert-' + ${clase} + ' alert-dismissible fade show'"
+            role="alert"
+          >
+            <span th:text="${mensaje}"></span>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <form
+            th:action="@{/productos/crear}"
+            th:object="${productoDto}"
+            method="post"
+          >
+            <!-- Token CSRF requerido por Spring Security -->
+            <input
+              type="hidden"
+              th:name="${_csrf.parameterName}"
+              th:value="${_csrf.token}"
+            />
+
+            <div class="row mb-3">
+              <label for="codigo" class="col-sm-4 col-form-label">Código</label>
+              <div class="col-sm-8">
+                <input
+                  type="text"
+                  th:field="*{codigo}"
+                  class="form-control"
+                  id="codigo"
+                />
+                <p
+                  th:if="${#fields.hasErrors('codigo')}"
+                  th:errors="*{codigo}"
+                  class="text-danger"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="datepicker" class="col-sm-4 col-form-label"
+                >Fecha</label
+              >
+              <div class="col-sm-8">
+                <input
+                  type="text"
+                  th:field="*{fechaCreacion}"
+                  class="form-control"
+                  id="datepicker"
+                />
+                <p
+                  th:if="${#fields.hasErrors('fechaCreacion')}"
+                  th:errors="*{fechaCreacion}"
+                  class="text-danger"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="nombre" class="col-sm-4 col-form-label">Nombre</label>
+              <div class="col-sm-8">
+                <input
+                  type="text"
+                  th:field="*{nombre}"
+                  class="form-control"
+                  id="nombre"
+                />
+                <p
+                  th:if="${#fields.hasErrors('nombre')}"
+                  th:errors="*{nombre}"
+                  class="text-danger"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="precio" class="col-sm-4 col-form-label">Precio</label>
+              <div class="col-sm-8">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  th:field="*{precio}"
+                  class="form-control"
+                  id="precio"
+                />
+                <p
+                  th:if="${#fields.hasErrors('precio')}"
+                  th:errors="*{precio}"
+                  class="text-danger"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="descripcion" class="col-sm-4 col-form-label"
+                >Descripción</label
+              >
+              <div class="col-sm-8">
+                <input
+                  type="text"
+                  th:field="*{descripcion}"
+                  class="form-control"
+                  id="descripcion"
+                />
+                <p
+                  th:if="${#fields.hasErrors('descripcion')}"
+                  th:errors="*{descripcion}"
+                  class="text-danger"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="observacion" class="col-sm-4 col-form-label"
+                >Observación</label
+              >
+              <div class="col-sm-8">
+                <textarea
+                  th:field="*{observacion}"
+                  class="form-control"
+                  id="observacion"
+                ></textarea>
+                <p
+                  th:if="${#fields.hasErrors('observacion')}"
+                  th:errors="*{observacion}"
+                  class="text-danger"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="saldoMinimo" class="col-sm-4 col-form-label"
+                >Saldo Mínimo</label
+              >
+              <div class="col-sm-8">
+                <input
+                  type="number"
+                  min="0"
+                  th:field="*{saldoMinimo}"
+                  class="form-control"
+                  id="saldoMinimo"
+                />
+                <p
+                  th:if="${#fields.hasErrors('saldoMinimo')}"
+                  th:errors="*{saldoMinimo}"
+                  class="text-danger"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="saldoMaximo" class="col-sm-4 col-form-label"
+                >Saldo Máximo</label
+              >
+              <div class="col-sm-8">
+                <input
+                  type="number"
+                  min="0"
+                  th:field="*{saldoMaximo}"
+                  class="form-control"
+                  id="saldoMaximo"
+                />
+                <p
+                  th:if="${#fields.hasErrors('saldoMaximo')}"
+                  th:errors="*{saldoMaximo}"
+                  class="text-danger"
+                ></p>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <label for="costoTotal" class="col-sm-4 col-form-label"
+                >Costo total</label
+              >
+              <div class="col-sm-8">
+                <input
+                  type="number"
+                  value="0"
+                  class="form-control"
+                  id="costoTotal"
+                  readonly
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="offset-sm-4 col-sm-4 d-grid">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+              </div>
+
+              <div class="col-sm-4 d-grid">
+                <a class="btn btn-outline-primary" th:href="@{/productos/}"
+                  >Cancelar</a
+                >
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://unpkg.com/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
